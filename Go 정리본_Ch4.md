@@ -217,7 +217,160 @@ func WriteTo(w io.Writer, lines []string) (n int64, err error) {
 
   
 
-## 4.2 
+## 4.2 값으로 취급되는 함수
+
+- Go 언어에서, **함수**는 **값으로 변수에 담길 수 있고**, **다른 함수로 넘기거나 돌려받을 수 있음**
+
+
+
+### 4.2.1 함수 리터럴
+
+- add 함수의 이름이 함수를 담고 있는 변수처럼 보임
+
+  ```go
+  func add(a, b int) int {
+      return a + b
+  }
+  ```
+
+  
+
+- 함수 이름을 뺀 함수 (함수 리터럴 (Function literal), 익명 함수)
+
+  ```go
+  func(a, b int) int {
+      return a + b
+  }
+  ```
+
+
+
+- 인자와 반환값이 없는 함수
+
+  ```go
+  func printHello() {
+      fmt.Println("Hello")
+  }
+  ```
+
+
+
+- 함수의 이름을 없애고, 함수 리터럴만을 남긴 다음 호출
+
+  ```go
+  func Example_funcLiteral() {
+      func() {
+          fmt.Println("Hello")
+      }() // 함수 호출
+      // Output:
+      // Hello
+  }
+  ```
+
+  - 함수 리터럴
+
+    ```go
+    func() {
+    	fmt.Println("Hello")
+    }
+    ```
+
+  - 함수 호출
+
+    ```go
+    ()
+    ```
+
+
+
+-  함수 리터럴을 printHello 변수에 담은 후 호출
+
+  ```go
+  func Example_funcLiteralVar() {
+      printHello := func() {
+          fmt.Println("Hello")
+      }
+      
+      printHello() // 호출
+      // Output:
+      // Hello
+  }
+  ```
+
+
+
+
+
+### 4.2.2 고계 함수
+
+- Higher-order function : 함수를 넘기고 받는 함수 (더 고차원적인 함수라는 의미)
+
+  
+
+- 원래는 파일에서 한 줄 씩 읽어 슬라이스에 추가하는 ReadFrom, 각 사용처마다 함수를 활용하고 싶은 경우 고계 함수 이용
+
+  ```go
+  func ReadFrom(r io.Reader, f func(line string)) error {
+      scanner := bufio.NewScanner(r)
+      for scanner.Scan() {
+          f(scanner.Text())
+      }
+      
+      if err := scanner.Err(); err != nil {
+          return err
+      }
+      return nil
+  }
+  ```
+
+
+
+- 함수 리터럴을 넣어 호출
+
+  ```go
+  func ExampleReadFrom_Print() {
+      r := strings.NewReader("bill\ntom\njane\n")
+      err := ReadFrom(r, func(line string){
+          fmt.Println("(", line, ")")
+      })
+      if err != nil {
+          fmt.Println(err)
+      }
+      // Output:
+      // (bill)
+      // (tom)
+      // (jane)
+  }
+  ```
+
+
+
+### 4.2.3 클로저
+
+- **닫힘**이라는 의미
+- **외부에서 선언한 변수를 함수 리터럴 내에서 마음대로 접근할 수 있는 코드**
+
+
+
+- 슬라이스에 추가하여 넣는 코드
+
+  ```go
+  func ExampleReadFrom_append() {
+      r := strings.NewReader("bill\ntom\njane\n")
+      var lines []string
+      err := ReadFrom(r, func(line string) {
+          lines = append(lines, line) // ReadFrom에 넘겨주는 함수 리터럴 안에서 lines 라는 문자열 슬라이스를 사용중
+      })
+      
+      if err != nil {
+          fmt.Println(err)
+      }
+      fmt.Println(lines)
+      
+      // Output:
+      // [bill tom jane]
+  }
+  ```
 
 
 
