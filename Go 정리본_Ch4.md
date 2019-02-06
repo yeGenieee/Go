@@ -9,7 +9,7 @@
 
   코드의 덩어리를 만든 다음에 그를 호출하고 귀환할 수 있는 구조를 **서브루틴**이라고 부른다. 큰 프로그램을 서브루틴으로 구분하면 코드를 재사용하여 중복된 코드를 줄일 수 있고, 서브 루틴의 내부와 외부를 분리하여 생각할 수 있어서 코드를 추상화하고 단순화할 수 있다.
 
-  Go에서는 이러한 서브루틴을 **함수**라고 부른다.  Go 언어는 값에 의한 호출 (Call by value)만을 지원한다. 함수 내에서 넘겨받은 변수값을 변경하더라도 함수 밖의 변수에는 영향을 주지 않는다. 변수에 담겨 있던 값만 넘어오게된다. 따라서, 함수 밖의 변수의 값을 변경하려면 해당 값이 들어 있는 주소값을 넘겨받아서 그 주소에 있는 값을 변경하여 참조에 의한 호출 (Call by reference)과 비슷한 효과를 낼 수 있다.
+  Go에서는 이러한 서브루틴을 **함수**라고 부른다.  Go 언어는 `값에 의한 호출 (Call by value)`만을 지원한다. 함수 내에서 넘겨받은 변수값을 변경하더라도 함수 밖의 변수에는 영향을 주지 않는다. 변수에 담겨 있던 값만 넘어오게된다. 따라서, 함수 밖의 변수의 값을 변경하려면 해당 값이 들어 있는 주소값을 넘겨받아서 그 주소에 있는 값을 변경하여 `참조에 의한 호출 (Call by reference)`과 비슷한 효과를 낼 수 있다.
 
 
 
@@ -27,10 +27,10 @@
 func ReadFrom(r io.Reader, lines *[]string) error {}
 ```
 
-- []string 자료형이 아닌 *[]string 자료형으로 받은 이유는 이 ReadFrom 함수가 lines 변수의 값을 변경하고자 하기 때문
+- `[]string` 자료형이 아닌 `*[]string` 자료형으로 받은 이유는 이 `ReadFrom` 함수가 `lines` 변수의 값을 변경하고자 하기 때문
 - 슬라이스는 배열에 대한 포인터, 길이 그리고 용량 이렇게 세 값으로 이루어짐
-  - 만약, *[]string을 쓰지 않고 []string을 이용하여 넘겼다면 이 포인터, 길이, 용량 이렇게 세 개의 값이 넘어가며, 세 개의 값을 담고 있던 변수와는 연관성이 없어짐
-  - 즉, lines []string 과 같이 받았다면, 함수 내의 lines 변수가 품고 있는 세 값을 변경해도 원래 변수의 변경과는 무관하다.
+  - 만약, `*[]string`을 쓰지 않고 `[]string`을 이용하여 넘겼다면 이 포인터, 길이, 용량 이렇게 세 개의 값이 넘어가며, 세 개의 값을 담고 있던 변수와는 연관성이 없어짐
+  - 즉, `lines []string` 과 같이 받았다면, 함수 내의`lines` 변수가 품고 있는 세 값을 변경해도 원래 변수의 변경과는 무관하다.
 
 ```go
 func AddOne(nums []int) {
@@ -49,7 +49,7 @@ func ExampleAddOne() {
 }
 ```
 
-- AddOne 함수에 값을 넘겨주었는데, 값을 넘겨주었는데도 호출 뒤에 n에 대해 변경이 일어남
+- `AddOne` 함수에 값을 넘겨주었는데, 값을 넘겨주었는데도 호출 뒤에 `n`에 대해 변경이 일어남
 - Go에서의 슬라이스가 배열에 대한 포인터, 길이, 용량 이렇게 세 값으로 이루어진 것으로 이 세 값이 넘어간 것이기 때문
   - 정수 1,2,3,4가 넘어간 것이 아님
 
@@ -59,14 +59,14 @@ func ExampleAddOne() {
 func ReadFrom(r io.Reader, lines *[]string) error { }
 ```
 
-- 위의 함수가 *[]string과 같은 포인터를 넘겨주는 이유?
+- 위의 함수가 `*[]string`과 같은 포인터를 넘겨주는 이유?
   - 함수가 넘겨준 슬라이스의 값을 변경해야 하기 때문
   - 슬라이스 값?
     - 배열 포인터
     - 길이
     - 용량
-  - 포인터로 넘어온 값은 *을 앞에 붙여 값을 참조할 수 있음
-  - 변수 앞에 &을 붙이면 해당 변수에 담겨 있는 포인터 값을 얻을 수 있음
+  - 포인터로 넘어온 값은 `*`을 앞에 붙여 값을 참조할 수 있음
+  - 변수 앞에 `&`을 붙이면 해당 변수에 담겨 있는 포인터 값을 얻을 수 있음
 
 
 
@@ -133,9 +133,9 @@ func WriteTo(w io.Writer, lines []string) error { }
 - 첫번째, 음수를 반환하여 에러를 의미하는 경우 
 
   - Go 에서는, 에러가 아닌 정상적인 경우에 이를 활용
-    - ex) strings.Index*는 문자열에서 원하는 문자열이 나타나는 위치를 돌려주는 함수
+    - ex) `strings.Index*`는 문자열에서 원하는 문자열이 나타나는 위치를 돌려주는 함수
     - 인덱스는 0부터 시작하므로, 음수가 나올 수 없는 상황
-    - 따라서, 문자열이 발견되지 않으면 -1을 return
+    - 따라서, 문자열이 발견되지 않으면 `-1`을 return
     - 해당 경우는 에러 상황은 아니고, 정상적인 상황의 한 종류일 뿐
 
 
@@ -144,7 +144,7 @@ func WriteTo(w io.Writer, lines []string) error { }
 
 - 새로운 에러를 생성해야 하는 경우
 
-  - errors.New 나 fmt.Errorf 이용
+  - `errors.New` 나 `fmt.Errorf` 이용
 
     ```go
     return errors.New("stringlist.ReadFrom: line is too long")
@@ -167,7 +167,7 @@ func WriteTo(w io.Writer, lines []string) error { }
 
   
 
-- 반환 시, 기존의 방식대로 결과값들을 return 뒤에 쉼표로 구분하여 나열할 수도 있고, 생략하고 return만 쓸 수도 있음
+- 반환 시, 기존의 방식대로 결과값들을 return 뒤에 쉼표로 구분하여 나열할 수도 있고, 생략하고 `return`만 쓸 수도 있음
 
 - 생략한 경우에는 돌려주는 인자들의 값들이 반환됨
 
@@ -225,7 +225,7 @@ func WriteTo(w io.Writer, lines []string) (n int64, err error) {
 
 ### 4.2.1 함수 리터럴
 
-- add 함수의 이름이 함수를 담고 있는 변수처럼 보임
+- `add` 함수의 이름이 함수를 담고 있는 변수처럼 보임
 
   ```go
   func add(a, b int) int {
@@ -235,7 +235,7 @@ func WriteTo(w io.Writer, lines []string) (n int64, err error) {
 
   
 
-- 함수 이름을 뺀 함수 (함수 리터럴 (Function literal), 익명 함수)
+- 함수 이름을 뺀 함수 (함수 리터럴 (`Function literal`), 익명 함수)
 
   ```go
   func(a, b int) int {
@@ -283,7 +283,7 @@ func WriteTo(w io.Writer, lines []string) (n int64, err error) {
 
 
 
--  함수 리터럴을 printHello 변수에 담은 후 호출
+-  함수 리터럴을 `printHello` 변수에 담은 후 호출
 
   ```go
   func Example_funcLiteralVar() {
@@ -303,11 +303,11 @@ func WriteTo(w io.Writer, lines []string) (n int64, err error) {
 
 ### 4.2.2 고계 함수
 
-- Higher-order function : 함수를 넘기고 받는 함수 (더 고차원적인 함수라는 의미)
+- `Higher-order function` : 함수를 넘기고 받는 함수 (더 고차원적인 함수라는 의미)
 
   
 
-- 원래는 파일에서 한 줄 씩 읽어 슬라이스에 추가하는 ReadFrom, 각 사용처마다 함수를 활용하고 싶은 경우 고계 함수 이용
+- 원래는 파일에서 한 줄 씩 읽어 슬라이스에 추가하는 `ReadFrom`, 각 사용처마다 함수를 활용하고 싶은 경우 고계 함수 이용
 
   ```go
   func ReadFrom(r io.Reader, f func(line string)) error {
@@ -376,5 +376,77 @@ func WriteTo(w io.Writer, lines []string) (n int64, err error) {
 
 
 
+### 4.2.4 생성기
 
+- 클로저를 이용한 generator
+
+  ```go
+  func NewIntGenerator() func() int {
+      var next int
+      return func() int {
+          next++
+          return next
+      }
+  }
+  
+  func ExampleNewIntGenerator() {
+      gen := NewIntGenerator()
+      fmt.Println(gen(), gen(), gen(), gen(), gen())
+      fmt.Println(gen(), gen(), gen(), gen(), gen())
+      // Output:
+      // 1 2 3 4 5
+      // 6 7 8 9 10
+  }
+  ```
+
+  - `NewIntGenerator`는 함수를 반환하는 고계 함수
+  - 반환값의 자료형은 `func() int` : `NewIntGenerator`는 정수를 반환하는 함수를 반환하는 함수
+  - `NewIntGenerator`가 반환하는 함수는 클로저
+  - 반환하는 함수 리터럴이 속해있는 스코프 안에 있는 `next` 변수에 접근하고 있음
+  - 이 함수는 `next` 변수와 함께 세트로 묶임
+
+
+
+- NewIntGenerator()를 여러번 호출하여 함수 여러 개를 갖는 경우
+
+  ```go
+  func ExampleNewIntGenerator_multiple() {
+      gen1 := NewIntGenerator()
+      gen2 := NewIntGenerator()
+      fmt.Println(gen1(), gen1(), gen1())
+      fmt.Println(gen2(), gen2(), gen2(), gen2(), gen2())
+      fmt.Println(gen1(), gen1(), gen1(), gen1())
+      // Output:
+      // 1 2 3
+      // 1 2 3 4 5
+      // 4 5 6 7
+  }
+  ```
+
+  - `gen1`과 `gen2`에 묶여있는 `next`는 서로 다르므로, 결과도 다르게 나옴
+  - `gen1`과 `gen2` 두 함수의 상태는 **분리**되어 있음
+
+
+
+### 4.2.5 명명된 자료형
+
+- 자료형에 새로 이름을 붙일 수 있음
+
+- `int32`의 별칭인 `rune`
+
+- 이를 **명명된 자료형**, **Named Type** 이라고 함
+
+  ```go
+  type rune int32
+  ```
+
+- 명명되지 않은 자료형 (Unnamed Type) ?
+
+  ```go
+  type runes []rune
+  type MyFunc func() int
+  ```
+
+  - `runes`와 `MyFunc` 는 이름 자체만으로 자료형을 지칭 : **명명된 자료형 (Named Type)**
+  -  `[]rune` 과 `func() int` 는 이름만으로 자료형을 지칭하는 것이 아님 : **명명되지 않은 자료형 (Unnamed Type)**
 
