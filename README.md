@@ -13,3 +13,6 @@
  [디스커버리 Go 언어](http://www.hanbit.co.kr/store/books/look.php?p_code=B5279497767)
 
 ![](Go_book.png) 
+
+
+### [Ch1 Go 언어 시작하기](./Go\ 정리본_ch1.md)
