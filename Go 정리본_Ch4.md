@@ -449,4 +449,431 @@ func WriteTo(w io.Writer, lines []string) (n int64, err error) {
 
   - `runes`와 `MyFunc` 는 이름 자체만으로 자료형을 지칭 : **명명된 자료형 (Named Type)**
   -  `[]rune` 과 `func() int` 는 이름만으로 자료형을 지칭하는 것이 아님 : **명명되지 않은 자료형 (Unnamed Type)**
+  
+  
+  ### 4.2.5 명명된 자료형
+  
+  - 자료형에 새로 **이름을 붙일 수 있음**
+  
+  - `rune`형이 `int32`의 별칭 : **명명된 자료형 (Named Type)**
+  
+  ```go
+  type rune int32
+  ```
+  
+  
+  
+  - 명명되지 않은 자료형 (Unnamed Type)
+  
+  ```go
+  type runes []rune
+  type MyFunc func() int
+  ```
+  
+  - runes와 MyFunc : 이름 자체만으로 자료형을 지칭 ==> 명명된 자료형
+  - []rune 과 func() int : 이름만으로 자료형을 지칭 X ==> 명명되지 않은 자료형
+  - 명명된 자료형과 명명되지 않은 자료형 모두에 type 예약어를 사용하여 새 이름을 붙여줄 수 있음
+  
+  
+  
+  - 자료형을 붙임으로써 장점?
+  
+  - 정점과 간선으로 이루어진 그래프를 다루는 코드
+  - 각 정점과 간선은 정수형으로 된 ID값을 사용하여 접근하는 코드
+  
+  ```go
+  // Vertex를 Edge로 바꾼 간선 ID Generator
+  func NewVertexIDGenerator() func() int{
+  var next int
+  return func() int {
+  next++
+  return next
+  }
+  }
+  ```
+  
+  - 간선의 ID를 받아 새로운 간선을 생성하는 함수 `NewEdge`
+  
+  ```go
+  func NewEdge(eid int) {
+  ...
+  }
+  
+  func main() {
+  gen := NewVertexIDGenerator()
+  gen2 := NewEdgeIDGenerator()
+  ...
+  e := NewEdge(gen()) // 간선의 ID를 넘겨야하는데, 정점의 ID를 넘기고 있음
+  }
+  ```
+  
+  - 해당 버그를 컴파일 시간에 잡지 못하는 이유는, NewEdge를 호출할 때, 간선의 ID를 넘겨야 하는데 정점의 ID를 넘긴 것에 대한 실수를 잡지 못했기 때문 (컴파일 시간에 구분 불가)
+  - 해결하려면?
+  
+  
+  
+  - 자료형에 서로 다른 이름을 붙임으로써 해결
+  
+  ```go
+  type VertexID int
+  type EdgeID int
+  ```
+  
+  - int에 `VertextID` 와 `EdgeID` 두 이름을 붙여 서로 다른 이름이 붙은 자료형으로 만듦
+  
+  ```go
+  func NewVertexIDGenerator() func() VertexID {
+  var next VertexID
+  return func() VertexID {
+  next++
+  return next
+  }
+  }
+  ```
+  
+  - 위 함수가 리턴하는 generator는 호출될 때마다 VertexID 를 반환함
+  
+  - 만약, 변수 next가 VertexID 형이 아니라 int형이라면 바로 next를 반환할 수 없고, VertexID 로 형변환해주어야 함
+  
+  - int, VertextID가 둘 다 명명된 자료형(Named Type)이기 때문
+  - 서로 다른 Named Type끼리는 호환이 되지 않음
+  
+  ```go
+  func NewVertextIDGenerator() func() VertexID() {
+  var next VertexID
+  return func() VertexID {
+  next++
+  return VertexID(next)
+  }
+  }
+  ```
+  
+  - 어떤 방식을 사용하든지 간에 이 generator가 최종적으로 반환하는 값은 `VertexID형`
+  
+  ```go
+  func NewEdge(eid EdgeID) {
+  // ...
+  }
+  
+  func main() {
+  gen := NewVertexIDGenerator()
+  // ...
+  e := NewEdge(gen()) // error
+  }
+  ```
+  
+  - 이제는 위와 같은 코드는 오류 발생
+  
+  
+  
+  - `[]rune` 과 `runes`와 같이 **명명되지 않은 자료형(Unnamed Type)**과 **명명된 자료형 (Named Type)** 사이에는 표현이 같으면 호환됨
+  
+  ```go
+  type runes []rune
+  
+  func main() {
+  var a []rune = runes{65,66}
+  fmt.Println(string(a))
+  }
+  ```
+  
+  
+  
+  - 명명된 자료형을 이용하면 자료형을 하드 코딩하는 것에 비해 **나중에 일괄적으로 해당 자료형의 표현을 변경할 수 있다**는 점이 장점
+  
+  
+  
+  ### 4.2.6 명명된 함수형
+  
+  - Go 언어에서 함수는 일급 시민으로 분류됨
+  
+  - 따라서, 함수의 자료형도 사용자가 정의할 수 있음
+  
+  - 두 정수를 넘겨 받아 정수 하나를 반환하는 함수형을 `BinOp` 형으로 정의
+  
+  ```go
+  type BinOp func(int, int) int
+  ```
+  
+  - 명명된 함수형도 자료형 검사를 진행
+  
+  - BinOp를 받는 함수 OpThreeAndFour
+  
+  ```go
+  func OpThreeAndFour(f BinOp) {
+  fmt.Println(f(3,4))
+  }
+  ```
+  
+  - 이 함수를 호출할 때, 아래와 같은 방식으로 호출하면?
+  
+  ```go
+  OpThreeAndFour(func (a, b int) int {
+  return a + b
+  })
+  ```
+  
+  - `OpThreeAndFour` 는 `BinOp` 형을 인자로 받는데, 호출 시에는 그냥 정수 둘을 받고 정수 하나를 반환하는 함수를 넘겨줌 --> 컴파일 오류를 발생시키지 않음
+  - 왜? `func (a, b int) int` 자료형이 명명되지 않은 자료형이기 때문
+  - 양 쪽 모두 명명된 자료형이 아니면 서로 간에 호환됨
+  
+  
+  
+  - 반면, 표현이 같은 함수형이라도,  양쪽 모두 이름이 있는 경우에는 호환 X
+  
+  ```go
+  type BinSub func(int, int) int
+  ```
+  
+  - `BinOp` 와 동일한 표현형으로 된 명명된 함수형
+  
+  - 
+  
+  ```go
+  type BinOp func(int, int) int
+  type BinSub func(int, int) int
+  
+  func BinOpToBinSub(f BinOp) BinSub {
+  var count int
+  return func(a, b int) int {
+  fmt.Println(f(a,b))
+  count++
+  return count
+  }
+  }
+  ```
+  
+  - `BinOpToBinSub` 는 `BinOp` 함수를 받아 `BinSub` 함수를 반환하는 함수
+  
+  ```go
+  func ExampleBinOpToBinSub() {
+  sub := BinOpToBinSub(func(a, b int) int {
+  return a + b 
+  })
+  
+  sub(5,7)
+  sub(5,7)
+  count := sub(5,7)
+  
+  fmt.Println("count:", count)
+  // Output:
+  // 12
+  // 12
+  // 12
+  // count:3
+  }
+  ```
+  
+  - BinOpToBinSub를 호출하여 sub는 BinSub의 자료형이 됨
+  
+  
+  
+  - BinOpToBiNSub로 두 번 둘러싸면?
+  
+  ```go
+  sub := BinOpToBinSub(BinOpToBinSub(func (a, b int) int {
+  return a + b
+  }))
+  ```
+  
+  - 컴파일 시 오류가 발생함
+  - 함수 리터럴과 함수형 사이에는 자동으로 형변환이 일어나지만, 명명된 함수형 사이에서는 자동으로 형변환이 일어나지 않음
+  
+  
+  
+  ### 4.2.7 인자 고정
+  
+  - 함수의 인자를 고정하고 싶을 때
+  
+  ```go
+  // Insert 함수는 집합에 val을 추가함
+  func Insert(m map[string]int, val string)
+  ```
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  ## 4.3 메서드
+  
+  - 서브루틴 : 코드의 덩어리를 만든 다음에 그것을 호출하고 반환할 수 있는 구조
+  - 메서드 : 리시버가 붙은 서브루틴
+  
+  
+  
+  - 자료형 T에 대하여 메서드를 호출할 때, 자료형 T에 대한 리시버가 함수 이름, 즉 메서드 이름 앞에 붙음
+  
+  - 리시버 부분 : 인자 목록과 같지만 함수 이름 앞에 온다는 것이 다르다
+  
+  ```go
+  func (recv T) MethodName(p1 T1, p2 T2) R1
+  ```
+  
+  - `(recv T)` 부분이 리시버
+  
+  
+  
+  ### 4.3.1 단순 자료형 메서드
+  
+  ```go
+  type VertexID int // 정수형으로 명명된 타입
+  ```
+  
+  ```go
+  func ExampleVertexID_print() {
+  i := VertexID(100)
+  fmt.Println(i)
+  // Output:
+  // 100
+  }
+  ```
+  
+  - `i`는 정수형이 아닌 `VertexID` 형이지만 정수형과 마찬가지로 출력됨
+  
+  
+  
+  - 리시버가 추가
+  
+  ```go
+  // i가 VertexID 자료형이면, i.String()과 같이 메서드를 호출할 수 있음
+  func (id VertexID) String() string {
+  return fmt.Sprintf("VertexID(%d)", id)
+  }
+  ```
+  
+  ```go
+  func ExampleVertexID_String() {
+  i := VertexID(100)
+  fmt.Println(i)
+  // Output:
+  // VertexID(100)
+  }
+  ```
+  
+  - Go의 인터페이스라는 기능때문에 fmt.Println에 i.String()을 넘겨주지 않았는데도 이런 결과가 나옴!!
+  
+  
+  
+  
+  
+  ### 4.3.2 다중 문자열 집합
+  
+  - 문자열 다중 집합
+  
+  - 맵의 키는 집합의 원소인 문자열, 값은 해당 원소가 몇 번 반복되는지를 표시하는 정수
+  
+  ```go
+  type MultiSet map[string]int // 자료형에 이름 붙이기 (이래야 메서드 정의 가능)
+  ```
+  
+  - Insert / Erase / Count / String 메서드 (삽입 / 삭제 / 어떤 원소가 몇 개 들어있는지 확인 / 문자열로 출력)
+  
+  ```go
+  type MultiSet map[string]int
+  
+  func (m MultiSet) Insert(val string) {
+  m[val]++
+  }
+  
+  func (m MultiSet) Erase(val string) {
+  if m[val] <= 1 {
+  delete(m, val)
+  } else {
+  m[val]--
+  }
+  }
+  
+  func (m MultiSet) Count(val string) int {
+  return m[val]
+  }
+  
+  func (m MultiSet) String () string {
+  s := "{ "
+  for val, count := range m {
+  s += strings.Repeat(val+" ", count)
+  }
+  return s + "}"
+  }
+  ```
+  
+  
+  
+  ### 4.3.3 포인터 리시버
+  
+  - 포인터 리시버 : 자료형이 포인터형인 리시버
+  
+  - 포인터로 전달해야 할 경우 포인터 리시버 사용
+  
+  ```go
+  type Graph [][]int
+  ```
+  
+  ```go
+  func WriteTo(w io.Writer, adjList [][]int) error
+  func ReadFrom(r io.Reader, adjList *[][]int) error
+  ```
+  
+  ```go
+  func (adjList Graph) WriteTo(w io.Writer) error
+  func (adjList *Graph) ReadFrom(r io.Reader) error
+  ```
+  
+  
+  
+  
+  
+  ### 4.3.4 공개 및 비공개
+  
+  - Go 언어는 public이나 private의 예약어 없이 **식별자 이름의 첫 글자**가 **대문자**인지 / **소문자** 인지에 따라 접근 구분을 함
+  - 대문자로 시작하는 메서드, 자료형, 변수, 상수, 함수 : 모듈 밖에서 보임
+  - 소문자로 시작하는 메서드, 자료형, 변수, 상수, 함수 : 모듈 밖에서 보이지 않음
+  
+  
+  
+  ## 4.4 활용
+  
+  ### 4.4.1 타이머 활용하기
+  
+  -  프로그램의 수행을 잠시 멈추고 싶을 때, `time.Sleep` 함수 이용
+  
+  ```go
+  package main
+  
+  import "fmt"
+  
+  func CountDown(seconds int) {
+  for seconds > 0 {
+  fmt.Println(seconds)
+  time.Sleep(time.Second)
+  seconds--
+  }
+  }
+  
+  func main() {
+  fmt.Println("Ladies and gentlemen!")
+  CountDown(5)
+  }
+  ```
+  
+  - time.Sleep을 통해 1초에 한 줄씩 출력되도록3 함
+  - **Blocking Timer** : 1초라는 시간을 기다리는 동안 프로그램은 잠시 수행 중단
+  - **Non-Blocking Timer** : `time`이라는 모듈안에 있는 `Timer*` 를 이용하면 됨
+  
+  - **Callback**
+  
+  - 비동기적 상황에서 어떤 조건이 만족될 때 호출해달라고 요청하는 것
+  
+  ```go
+  time.AfterFunc(5*time.Second, func() {
+  // ...
+  })
+  ```
 
