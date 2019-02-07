@@ -77,21 +77,21 @@
 
     - < 결과 >
 
-      - Go 홈페이지와 비슷한 화면![image-20181121143656902](/Users/user/Desktop/스크린샷 2018-11-21 오후 2.36.34.png)
+      - Go 홈페이지와 비슷한 화면![image-20181121143656902](./스크린샷 2018-11-21 오후 2.36.34.png)
 
     - http://localhost:6060/pkg/github.com/yeGenieee/gogo/seq/
 
       - 패키지 seq에 대한 문서 결과 (코드 작성 시 주석을 달아놨기 때문에 문서 출력 가능)
       - <결과>
 
-      ![image-20181121143656902](/Users/user/Desktop/스크린샷 2018-11-21 오후 2.39.57.png)
+      ![image-20181121143656902](./스크린샷 2018-11-21 오후 2.39.57.png)
 
 
 
 
 
     - 오픈 소스 Go 코드에 대해 문서들을 모두 모아놓은 사이트
-
+    
       - **https://godoc.org**
       - 알려진 Go 패키지들의 문서를 검색하고 볼 수 있음
 
@@ -125,7 +125,7 @@
 
    ```go
   go tool fix github.com/yeGenieee/gogo/seq
-   ```
+  ```
 
 
 ## Test
