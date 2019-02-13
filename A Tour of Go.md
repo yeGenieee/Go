@@ -728,7 +728,52 @@ func main() {
 - 메소드의 집합으로 인터페이스 정의
 - 메소드들의 구현되어 있는 타입의 값은 모두 인터페이스 타입의 값이 될 수 있음
 
+```go
+package main
+
+import (
+    "fmt"
+    "math"
+)
+
+type Abser interface {
+    Abs() float64
+}
+
+func main() {
+    var a Abser
+    f := MyFloat(-math.Sqrt2)
+    v := Vertex{3, 4}
+
+    a = f  // a MyFloat implements Abser
+    a = &v // a *Vertex implements Abser
+    a = v  // a Vertex, does NOT
+    // implement Abser
+
+    fmt.Println(a.Abs())
+}
+
+type MyFloat float64
+
+func (f MyFloat) Abs() float64 {
+    if f < 0 {
+        return float64(-f)
+    }
+    return float64(f)
+}
+
+type Vertex struct {
+    X, Y float64
+}
+
+func (v *Vertex) Abs() float64 {
+    return math.Sqrt(v.X*v.X + v.Y*v.Y)
+}
+```
 
 
 
+### 63. 고루틴 (Goroutines)
+
+- Go 런타임에 의해 관리되는 경량 쓰레드
 
